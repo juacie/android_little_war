@@ -17,7 +17,8 @@
       "attackSpeed": 1.0,
       "damageType": "PHYSICAL",
       "element": "NONE",
-      "aoeShape": "SINGLE"
+      "aoeShape": "SINGLE",
+      "squadCapacity": 6
     },
     {
       "id": "mage",
@@ -36,7 +37,8 @@
       "attackSpeed": 0.8,
       "damageType": "MAGICAL",
       "element": "FIRE",
-      "aoeShape": "PLUS"
+      "aoeShape": "PLUS",
+      "squadCapacity": 4
     },
     {
       "id": "shield",
@@ -55,7 +57,8 @@
       "attackSpeed": 0.9,
       "damageType": "PHYSICAL",
       "element": "NONE",
-      "aoeShape": "SINGLE"
+      "aoeShape": "SINGLE",
+      "squadCapacity": 9
     },
     {
       "id": "spearman",
@@ -74,7 +77,8 @@
       "attackSpeed": 1.1,
       "damageType": "PHYSICAL",
       "element": "WATER",
-      "aoeShape": "SINGLE"
+      "aoeShape": "SINGLE",
+      "squadCapacity": 9
     },
     {
       "id": "militia",
@@ -93,7 +97,8 @@
       "attackSpeed": 1.0,
       "damageType": "PHYSICAL",
       "element": "NONE",
-      "aoeShape": "SINGLE"
+      "aoeShape": "SINGLE",
+      "squadCapacity": 9
     },
     {
       "id": "cavalry",
@@ -112,7 +117,8 @@
       "attackSpeed": 1.2,
       "damageType": "PHYSICAL",
       "element": "WOOD",
-      "aoeShape": "SINGLE"
+      "aoeShape": "SINGLE",
+      "squadCapacity": 4
     },
     {
       "id": "crossbow",
@@ -131,7 +137,8 @@
       "attackSpeed": 0.85,
       "damageType": "PHYSICAL",
       "element": "LIGHT",
-      "aoeShape": "SINGLE"
+      "aoeShape": "SINGLE",
+      "squadCapacity": 6
     },
     {
       "id": "assassin",
@@ -150,7 +157,8 @@
       "attackSpeed": 1.25,
       "damageType": "PHYSICAL",
       "element": "DARK",
-      "aoeShape": "SINGLE"
+      "aoeShape": "SINGLE",
+      "squadCapacity": 4
     },
     {
       "id": "leader",
@@ -171,7 +179,8 @@
       "element": "NONE",
       "aoeShape": "SINGLE",
       "isLeader": true,
-      "leaderAttackBuffPercent": 15
+      "leaderAttackBuffPercent": 15,
+      "squadCapacity": 4
     }
   ],
   "playerFormation": {

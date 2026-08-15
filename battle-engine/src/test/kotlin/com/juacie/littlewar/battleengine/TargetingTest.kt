@@ -7,18 +7,28 @@ class TargetingTest {
 
     @Test
     fun distance_adjacentFrontlines_sameLane_isOne() {
-        assertEquals(1, Targeting.distance(Position(0, 2), Position(0, 2)))
+        assertEquals(1, Targeting.distance(fakeUnit(Position(0, 2)), fakeUnit(Position(0, 2))))
     }
 
     @Test
     fun distance_growsWithDepth() {
-        assertEquals(2, Targeting.distance(Position(1, 2), Position(0, 2)))
-        assertEquals(5, Targeting.distance(Position(2, 2), Position(2, 2)))
+        assertEquals(2, Targeting.distance(fakeUnit(Position(1, 2)), fakeUnit(Position(0, 2))))
+        assertEquals(5, Targeting.distance(fakeUnit(Position(2, 2)), fakeUnit(Position(2, 2))))
     }
 
     @Test
     fun distance_laneGapCanExceedDepthGap() {
-        assertEquals(4, Targeting.distance(Position(0, 0), Position(0, 4)))
+        assertEquals(4, Targeting.distance(fakeUnit(Position(0, 0)), fakeUnit(Position(0, 4))))
+    }
+
+    @Test
+    fun distance_isNotAffectedByRetreatState() {
+        // 細格參與戰鬥計算的方式是命中率懲罰（見 Squad.retreatEvasionBonus），刻意不影響
+        // distance/range 判定——沒有移動機制時，把退縮換成距離懲罰可能讓一個已經在攻擊範圍
+        // 內的方陣，一旦把對方打到半血以下就瞬間搆不到，永遠打不死、卡成平手。
+        val attacker = fakeUnit(Position(0, 2), hpFraction = 1.0)
+        val battered = fakeUnit(Position(0, 2), hpFraction = 0.1)
+        assertEquals(1, Targeting.distance(attacker, battered))
     }
 
     @Test
@@ -44,21 +54,25 @@ class TargetingTest {
         assertEquals(setOf(primary, up, down, left, right), result)
     }
 
-    private fun fakeUnit(position: Position): UnitInstance {
+    private fun fakeUnit(position: Position, hpFraction: Double = 1.0): Squad {
         val def = UnitDefinition(
-            id = "test", name = "test", hp = 10, physicalAttack = 1, magicAttack = 0,
+            id = "test", name = "test", hp = 100, physicalAttack = 1, magicAttack = 0,
             armor = 0, magicDefense = 0, accuracy = 100.0, evasion = 0.0,
             physicalCritChance = 0.0, magicCritChance = 0.0, attackRange = 1,
-            attackSpeed = 1.0, damageType = DamageType.PHYSICAL, element = Element.NONE
+            attackSpeed = 1.0, damageType = DamageType.PHYSICAL, element = Element.NONE,
+            squadCapacity = 1
         )
-        return UnitInstance(
+        val maxHp = 100
+        return Squad(
             id = "unit-${position.row}${position.col}",
             definition = def,
             side = BattleSide.ENEMY,
             position = position,
+            capacity = 1,
+            maxHp = maxHp,
             effectivePhysicalAttack = 1,
             effectiveMagicAttack = 0,
-            currentHp = 10
+            currentHp = (maxHp * hpFraction).toInt().coerceAtLeast(1)
         )
     }
 }

@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.juacie.littlewar.battleengine.BattleSide
-import com.juacie.littlewar.battleengine.UnitSnapshot
+import com.juacie.littlewar.battleengine.SquadSnapshot
 
 @Composable
 fun BattleScreen(
@@ -85,7 +85,7 @@ fun BattleScreen(
 private fun SideGrid(
     side: BattleSide,
     rowOrder: List<Int>,
-    roster: List<UnitSnapshot>,
+    roster: List<SquadSnapshot>,
     hp: Map<String, Int>,
     flashId: String?
 ) {
@@ -112,7 +112,7 @@ private fun SideGrid(
 }
 
 @Composable
-private fun BattleCell(unit: UnitSnapshot?, currentHp: Int, isFlashing: Boolean, modifier: Modifier = Modifier) {
+private fun BattleCell(unit: SquadSnapshot?, currentHp: Int, isFlashing: Boolean, modifier: Modifier = Modifier) {
     val alive = unit != null && currentHp > 0
     val baseColor = when {
         unit == null -> MaterialTheme.colorScheme.surface
