@@ -64,4 +64,8 @@ data/repository/    — repository 介面的實作，@Singleton，透過 di/AppM
 
 ## Git 工作流程
 
-使用者是這個專案唯一的開發者，已明確要求：**完成一個階段性的小功能、且確認可以建置／測試通過之後，直接 commit（並 push 到 `origin/main`）,不用每次都先問。** 如果建置失敗或測試沒過，不要 commit，先修好。commit message 用中文或英文都可以，重點是講清楚「為什麼」這次改動存在。
+使用者是這個專案唯一的開發者，已明確要求：**完成一個階段性的小功能、且確認可以建置／測試通過之後，直接 commit（並 push 到 `origin/main`）,不用每次都先問。** 如果建置失敗或測試沒過，不要 commit，先修好。**commit message 一律用中文撰寫**，重點是講清楚「為什麼」這次改動存在，不是條列做了什麼。
+
+### push 權限注意事項
+
+`origin` 指向 `git@github.com:juacie/android_little_war.git`，但這台機器上設定的 SSH 帳號目前是 `mygo-jack`，沒有這個 repo 的寫入權限，push 會被拒絕。commit 本身不受影響（照樣 commit），但 push 會失敗直到帳號權限問題解決（加 collaborator／換 remote／換 SSH key 三選一，要問使用者要選哪個，不要自己猜）。
