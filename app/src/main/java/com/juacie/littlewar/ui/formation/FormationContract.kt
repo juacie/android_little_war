@@ -15,6 +15,7 @@ object FormationContract {
     sealed interface Event {
         data class SelectUnit(val unitId: String) : Event
         data class TapCell(val row: Int, val col: Int) : Event
+        data class MoveUnit(val fromRow: Int, val fromCol: Int, val toRow: Int, val toCol: Int) : Event
         data object ConfirmFormation : Event
     }
 

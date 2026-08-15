@@ -9,4 +9,5 @@ interface FormationRepository {
 
     fun selectUnit(unitId: String)
     fun toggleUnitAt(row: Int, col: Int)
+    fun moveUnitAt(fromRow: Int, fromCol: Int, toRow: Int, toCol: Int)
 }
