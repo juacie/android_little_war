@@ -1,7 +1,7 @@
 package com.juacie.littlewar.battleengine
 
-/** A unit's fixed starting info, so a client can render the board without re-deriving it from Formation. */
-data class UnitSnapshot(
+/** A squad's fixed starting info, so a client can render the board without re-deriving it from Formation. */
+data class SquadSnapshot(
     val id: String,
     val name: String,
     val side: BattleSide,
@@ -13,7 +13,7 @@ data class UnitSnapshot(
 data class BattleResult(
     val outcome: BattleOutcome,
     val totalTicks: Int,
-    val roster: List<UnitSnapshot>,
+    val roster: List<SquadSnapshot>,
     val events: List<BattleEvent>,
     val survivingPlayerUnitIds: List<String>,
     val survivingEnemyUnitIds: List<String>

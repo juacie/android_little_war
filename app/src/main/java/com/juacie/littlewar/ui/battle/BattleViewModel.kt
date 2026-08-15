@@ -10,7 +10,7 @@ import com.juacie.littlewar.battleengine.CriticalEvent
 import com.juacie.littlewar.battleengine.DamageEvent
 import com.juacie.littlewar.battleengine.DeathEvent
 import com.juacie.littlewar.battleengine.MissEvent
-import com.juacie.littlewar.battleengine.UnitSnapshot
+import com.juacie.littlewar.battleengine.SquadSnapshot
 import com.juacie.littlewar.domain.usecase.ObserveBattleResultUseCase
 import com.juacie.littlewar.ui.battle.BattleContract.Effect
 import com.juacie.littlewar.ui.battle.BattleContract.Event
@@ -78,7 +78,7 @@ class BattleViewModel @Inject constructor(
         else -> null
     }
 
-    private fun describeEvent(event: BattleEvent, roster: Map<String, UnitSnapshot>): String {
+    private fun describeEvent(event: BattleEvent, roster: Map<String, SquadSnapshot>): String {
         fun name(id: String) = roster[id]?.name ?: id
         return when (event) {
             is BattleStartEvent -> "雙方就位，戰鬥開始！"

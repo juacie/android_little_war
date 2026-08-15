@@ -14,6 +14,8 @@ Step 2（實機／模擬器實際遊玩，收集「好不好玩」的主觀回�
 
 2026-08-15 這輪 playtest 回饋已經衍生出一個範圍很大的構想（方陣制、移動機制、殘存人數衰減戰力），記在 [SquadBattleConcept.md](SquadBattleConcept.md)——這是討論中、未定案的方向，不是承諾要做的 Milestone，要開工前先回去確認範圍。
 
+方陣制拆成幾個階段交付，**Phase 1（核心地基）已完成**：方陣血量池化（`squadCapacity` 上限、data-driven，暫不做等級成長曲線）、方陣攻擊輸出隨人數放大、比例戰力衰減（打折攻擊方自己的攻擊力／命中率）、方陣內領袖加成（範圍收窄成限定同方陣）、退縮命中懲罰（細格參與戰鬥計算，但刻意做成不影響距離判定，避免沒有移動機制時卡成平手）。詳見 [BattleSystem.md](BattleSystem.md)「Squad model」一節。移動機制、英雄兵種、全軍領袖離場改版是各自獨立的後續階段，還沒開工，範圍要開工前再回 [SquadBattleConcept.md](SquadBattleConcept.md) 確認。
+
 ## 完整 Milestone 清單
 
 ```text

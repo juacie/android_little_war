@@ -14,12 +14,12 @@ object BattleEngine {
 
     fun simulate(playerFormation: Formation, enemyFormation: Formation, gameData: GameData, seed: Long): BattleResult {
         val random = Random(seed)
-        val playerUnits = playerFormation.toUnitInstances(gameData)
-        val enemyUnits = enemyFormation.toUnitInstances(gameData)
+        val playerUnits = playerFormation.toSquads(gameData)
+        val enemyUnits = enemyFormation.toSquads(gameData)
         val allUnits = playerUnits + enemyUnits
 
         val roster = allUnits.map {
-            UnitSnapshot(it.id, it.definition.name, it.side, it.position, it.definition.hp, it.definition.isLeader)
+            SquadSnapshot(it.id, it.definition.name, it.side, it.position, it.maxHp, it.definition.isLeader)
         }
 
         val events = mutableListOf<BattleEvent>()
@@ -77,19 +77,25 @@ object BattleEngine {
     }
 
     private fun resolveHit(
-        actor: UnitInstance,
-        target: UnitInstance,
+        actor: Squad,
+        target: Squad,
         random: Random,
         tick: Int,
         events: MutableList<BattleEvent>
     ) {
         val def = actor.definition
-        val (attack, defense, critChance) = when (def.damageType) {
+        // 比例戰力衰減：只打折攻擊方自己的輸出（攻擊力／命中率），防禦方的 armor/magicDefense/
+        // evasion 不受影響。方陣還活著時 hpFraction > 0，這裡不會是 0（死亡方陣不會被選為 actor）。
+        val decay = actor.hpFraction
+        val (baseAttack, defense, critChance) = when (def.damageType) {
             DamageType.PHYSICAL -> Triple(actor.effectivePhysicalAttack, target.definition.armor, def.physicalCritChance)
             DamageType.MAGICAL -> Triple(actor.effectiveMagicAttack, target.definition.magicDefense, def.magicCritChance)
         }
+        val attack = (baseAttack * decay).toInt()
+        val accuracy = def.accuracy * decay
+        val evasion = target.definition.evasion + target.retreatEvasionBonus
 
-        if (!CombatMath.rollHit(random, def.accuracy, target.definition.evasion)) {
+        if (!CombatMath.rollHit(random, accuracy, evasion)) {
             events += MissEvent(tick, actor.id, target.id)
             return
         }

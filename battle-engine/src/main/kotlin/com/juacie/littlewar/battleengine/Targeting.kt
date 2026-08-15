@@ -3,32 +3,36 @@ package com.juacie.littlewar.battleengine
 object Targeting {
 
     /**
-     * Distance between a unit and an opposing unit. The two 3x5 grids face each other across a
+     * Distance between a squad and an opposing squad. The two 3x5 grids face each other across a
      * 1-cell gap, so depth distance is (attackerRow + defenderRow + 1); lane distance is the
      * column difference. The larger of the two gates whether an attack is in range.
+     *
+     * Deliberately NOT affected by a squad's internal retreat state (see Squad.retreatEvasionBonus):
+     * without movement, pushing a weakened squad out of range here could permanently strand it
+     * just out of reach of the only attacker in range, stalling the fight into a draw forever.
      */
-    fun distance(attacker: Position, defender: Position): Int {
-        val depthDistance = attacker.row + defender.row + 1
-        val laneDistance = kotlin.math.abs(attacker.col - defender.col)
+    fun distance(attacker: Squad, defender: Squad): Int {
+        val depthDistance = attacker.position.row + defender.position.row + 1
+        val laneDistance = kotlin.math.abs(attacker.position.col - defender.position.col)
         return maxOf(depthDistance, laneDistance)
     }
 
-    /** Nearest alive enemy in range; ties broken by lowest HP (focus fire), then unit id. */
-    fun findPrimaryTarget(actor: UnitInstance, enemies: List<UnitInstance>): UnitInstance? =
+    /** Nearest alive enemy squad in range; ties broken by lowest HP (focus fire), then squad id. */
+    fun findPrimaryTarget(actor: Squad, enemies: List<Squad>): Squad? =
         enemies
             .asSequence()
             .filter { it.isAlive }
-            .filter { distance(actor.position, it.position) <= actor.definition.attackRange }
+            .filter { distance(actor, it) <= actor.definition.attackRange }
             .sortedWith(
                 compareBy(
-                    { distance(actor.position, it.position) },
+                    { distance(actor, it) },
                     { it.currentHp },
                     { it.id }
                 )
             )
             .firstOrNull()
 
-    fun collectAoeTargets(primary: UnitInstance, shape: AoeShape, allEnemies: List<UnitInstance>): List<UnitInstance> {
+    fun collectAoeTargets(primary: Squad, shape: AoeShape, allEnemies: List<Squad>): List<Squad> {
         if (shape == AoeShape.SINGLE) return listOf(primary)
 
         val p = primary.position
