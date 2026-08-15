@@ -49,12 +49,17 @@ class BattleViewModel @Inject constructor(
             }
 
             viewModelScope.launch {
+                var attackSeq = 0
                 for (event in result.events) {
                     applyDamage(event)
                     applyMove(event)
                     setState {
                         copy(
                             flashTargetId = flashedUnitId(event),
+                            activeAttack = (event as? AttackEvent)?.let {
+                                attackSeq++
+                                BattleContract.ActiveAttack(it.attackerId, it.primaryTargetId, attackSeq)
+                            } ?: activeAttack,
                             logText = describeEvent(event, rosterById)
                         )
                     }
