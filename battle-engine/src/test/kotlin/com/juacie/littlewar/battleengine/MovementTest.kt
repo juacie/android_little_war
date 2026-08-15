@@ -40,4 +40,17 @@ class MovementTest {
         // 已經在第一排且橫向對齊，沒有更近的移動方式了（macro grid 上的極限，不代表真的互相打得到）
         assertNull(Movement.planStep(Position(0, 2), Position(0, 2)))
     }
+
+    @Test
+    fun planStep_sideSteps_whenPreferredDirectionIsBlocked() {
+        // depth 是瓶頸，優先方向是往前一排 (1,2)，但那格被自己人佔住 -> 改試側移 (2,3)
+        val blockedByAlly = { pos: Position -> pos == Position(1, 2) }
+        assertEquals(Position(2, 3), Movement.planStep(Position(2, 2), Position(2, 4), blockedByAlly))
+    }
+
+    @Test
+    fun planStep_returnsNull_whenBothPreferredAndFallbackAreBlocked() {
+        val blockAll = { _: Position -> true }
+        assertNull(Movement.planStep(Position(2, 2), Position(2, 4), blockAll))
+    }
 }

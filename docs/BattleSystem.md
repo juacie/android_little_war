@@ -143,9 +143,14 @@ target's own row still keeps `depthDistance` above the squad's `attackRange` (st
 closed by this squad's movement alone).
 
 **Collision:** a squad won't move onto a cell already occupied by another *living* squad on its own
-side — no displacement/pathfinding, it just doesn't move that tick and re-evaluates next time it
-acts. This can produce a deterministic "traffic jam" behind a squad that's blocking the way; that's
-accepted behavior for this phase, not a bug.
+side. If `planStep`'s preferred axis (the depth/lane bottleneck) is blocked this way, it falls back to
+the other axis (a side-step) instead of giving up outright; only when *both* candidate cells are
+occupied does the squad skip moving that tick and re-evaluate next time it acts. This was added
+2026-08-15 after playtesting the original "just don't move" version — with squads sharing a column,
+a same-lane back-row squad would sit frozen behind its own front-row squad until that front squad
+died and freed the cell, which read as turn-based ("front row has to die before anyone else moves")
+rather than every squad independently pathing toward a target. No displacement/pathfinding beyond
+this one-step fallback — still deterministic, still no RNG.
 
 No RNG is involved in movement — `planStep` is a pure function of both squads' positions — so this
 doesn't touch determinism.
