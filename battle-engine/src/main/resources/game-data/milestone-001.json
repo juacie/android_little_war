@@ -13,7 +13,7 @@
       "physicalCritChance": 15,
       "magicCritChance": 0,
       "critMultiplier": 1.5,
-      "attackRange": 4,
+      "attackRange": 5,
       "attackSpeed": 1.0,
       "damageType": "PHYSICAL",
       "element": "NONE",
@@ -32,7 +32,7 @@
       "physicalCritChance": 0,
       "magicCritChance": 15,
       "critMultiplier": 1.5,
-      "attackRange": 4,
+      "attackRange": 5,
       "attackSpeed": 0.8,
       "damageType": "MAGICAL",
       "element": "FIRE",
@@ -100,14 +100,14 @@
   ],
   "playerFormation": {
     "slots": [
-      { "unitId": "archer", "row": 0, "col": 1 },
-      { "unitId": "mage", "row": 0, "col": 2 },
-      { "unitId": "archer", "row": 0, "col": 3 },
-      { "unitId": "shield", "row": 1, "col": 1 },
+      { "unitId": "shield", "row": 0, "col": 1 },
+      { "unitId": "spearman", "row": 0, "col": 2 },
+      { "unitId": "shield", "row": 0, "col": 3 },
+      { "unitId": "spearman", "row": 1, "col": 1 },
       { "unitId": "leader", "row": 1, "col": 2 },
-      { "unitId": "shield", "row": 1, "col": 3 },
-      { "unitId": "spearman", "row": 2, "col": 1 },
-      { "unitId": "spearman", "row": 2, "col": 3 }
+      { "unitId": "spearman", "row": 1, "col": 3 },
+      { "unitId": "archer", "row": 2, "col": 1 },
+      { "unitId": "mage", "row": 2, "col": 3 }
     ]
   },
   "enemyFormation": {

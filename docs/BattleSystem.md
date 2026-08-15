@@ -23,9 +23,14 @@ and formation composition are meant to be the puzzle, not something you can walk
 ## Turn order (ATB / energy gauge)
 
 Every tick, every alive unit gains `attackSpeed * 20` energy. Any unit at ≥100 energy acts (highest
-energy first, ties broken by unit id for determinism), spends 100 energy (not reset to 0 — the
-remainder carries over), and picks a target. Simulation runs up to 300 ticks; if neither side is
-wiped by then, the battle is a **draw**.
+energy first), spends 100 energy (not reset to 0 — the remainder carries over), and picks a target.
+Ties on energy (very common — mirrored units share `attackSpeed`, so both sides often cross the
+threshold on the same tick) are broken by shuffling the tied group with the battle's own seeded
+`Random`, **not** by unit id: an id-based tie-break sorts `"ENEMY-..."` before `"PLAYER-..."`
+alphabetically, which silently gave the enemy side first strike on every tied tick and, when that
+first strike killed the tied player unit, skipped that unit's action entirely for the tick. That bug
+showed up as an enemy win rate of ~60% in an otherwise perfectly mirrored formation. Simulation runs
+up to 300 ticks; if neither side is wiped by then, the battle is a **draw**.
 
 ## Targeting
 
@@ -81,3 +86,9 @@ If a formation includes a unit with `isLeader = true`, every unit's `physicalAtt
 - 1 formation slot = 1 combatant (the GDD's "N people per tile" squad-count idea is deferred).
 - Leader death does not end the battle early; the leader is just another combatant.
 - Only `SINGLE` and `PLUS` AoE shapes exist so far (line/full-board AoE are future work).
+- Backline-vs-backline (`row=2` on both sides) is always distance 5 — the maximum possible on a
+  3-row board. If a unit meant to still be dangerous from the backline (e.g. archer/mage) has
+  `attackRange < 5`, two such units surviving on opposite backlines can never reach each other and
+  the battle stalls out to the 300-tick draw cap. `archer`/`mage` are set to `attackRange = 5` for
+  exactly this reason — don't lower it below 5 without re-running a mirror-match simulation to
+  check the draw rate.
