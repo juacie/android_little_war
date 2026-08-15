@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.juacie.littlewar.battleengine.FormationTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-08-15T05:25:02.491Z" hostname="CI-JackYendeMacBook-Pro.local" time="0.002">
-  <properties/>
-  <testcase name="leaderBuff_increasesEffectiveAttackOfAllies" classname="com.juacie.littlewar.battleengine.FormationTest" time="0.001"/>
-  <testcase name="milestone001Preset_bothFormationsLoadIntoValidUnitInstances" classname="com.juacie.littlewar.battleengine.FormationTest" time="0.001"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>

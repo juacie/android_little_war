@@ -1,15 +1,18 @@
 *.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
+.gradle/
+
+# IDE
+.idea/
+*.iml
+
+# Android / Gradle build outputs — 不加開頭的「/」，這樣才會忽略所有層級的 build/
+# （之前吃過虧：battle-engine/ 沒有自己的 .gitignore，結果 build/ 產物整包被 commit 進去）
+build/
 /captures
-.externalNativeBuild
-.cxx
+.externalNativeBuild/
+.cxx/
+
+# Local machine config，含 SDK 路徑，每台機器都不一樣
 local.properties
+
+.DS_Store
