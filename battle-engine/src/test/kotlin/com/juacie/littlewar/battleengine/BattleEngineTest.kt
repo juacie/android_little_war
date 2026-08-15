@@ -52,6 +52,29 @@ class BattleEngineTest {
     }
 
     @Test
+    fun simulate_squadsOutOfInitialRange_moveTowardEachOtherAndFight() {
+        // shield 的 attackRange=1，兩邊各放在對角最遠的位置（distance = max(2+2+1, 4) = 5），
+        // 一開始互相打不到——方陣制 Phase 2 的移動機制應該讓雙方逐步靠近，最後真的打起來，
+        // 而不是原地 idle 到 300 tick 的平手上限。
+        val playerFar = Formation.fromFormationData(
+            BattleSide.PLAYER,
+            FormationData(listOf(FormationSlotData("shield", 2, 0)))
+        )
+        val enemyFar = Formation.fromFormationData(
+            BattleSide.ENEMY,
+            FormationData(listOf(FormationSlotData("shield", 2, 4)))
+        )
+
+        val result = BattleEngine.simulate(playerFar, enemyFar, gameData, seed = 5L)
+
+        assertTrue(result.events.any { it is MoveEvent }, "expected the out-of-range squads to move toward each other")
+        assertTrue(
+            result.events.any { it is AttackEvent },
+            "expected the squads to eventually close the distance and start fighting"
+        )
+    }
+
+    @Test
     fun simulate_tiedEnergyActors_areNotAlwaysResolvedInFavorOfOneSide() {
         // Two identical lone units always reach the energy threshold on the exact same tick, so
         // every seed produces a same-tick tie. Unit id ("ENEMY-..." < "PLAYER-..." alphabetically)

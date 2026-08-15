@@ -10,6 +10,7 @@ import com.juacie.littlewar.battleengine.CriticalEvent
 import com.juacie.littlewar.battleengine.DamageEvent
 import com.juacie.littlewar.battleengine.DeathEvent
 import com.juacie.littlewar.battleengine.MissEvent
+import com.juacie.littlewar.battleengine.MoveEvent
 import com.juacie.littlewar.battleengine.SquadSnapshot
 import com.juacie.littlewar.domain.usecase.ObserveBattleResultUseCase
 import com.juacie.littlewar.ui.battle.BattleContract.Effect
@@ -39,11 +40,18 @@ class BattleViewModel @Inject constructor(
             sendEffect(Effect.NavigateToResult)
         } else {
             val rosterById = result.roster.associateBy { it.id }
-            setState { copy(roster = result.roster, hp = result.roster.associate { it.id to it.maxHp }) }
+            setState {
+                copy(
+                    roster = result.roster,
+                    hp = result.roster.associate { it.id to it.maxHp },
+                    positions = result.roster.associate { it.id to it.position }
+                )
+            }
 
             viewModelScope.launch {
                 for (event in result.events) {
                     applyDamage(event)
+                    applyMove(event)
                     setState {
                         copy(
                             flashTargetId = flashedUnitId(event),
@@ -71,6 +79,12 @@ class BattleViewModel @Inject constructor(
         }
     }
 
+    private fun applyMove(event: BattleEvent) {
+        if (event is MoveEvent) {
+            setState { copy(positions = positions + (event.squadId to event.to)) }
+        }
+    }
+
     private fun flashedUnitId(event: BattleEvent): String? = when (event) {
         is DamageEvent -> event.targetId
         is MissEvent -> event.targetId
@@ -87,6 +101,14 @@ class BattleViewModel @Inject constructor(
             is DamageEvent -> "${name(event.attackerId)} 對 ${name(event.targetId)} 造成 ${event.amount} 點傷害"
             is MissEvent -> "${name(event.attackerId)} 的攻擊被 ${name(event.targetId)} 閃避了"
             is DeathEvent -> "${name(event.unitId)} 倒下了"
+            is MoveEvent -> {
+                val direction = when {
+                    event.to.row < event.from.row -> "向前推進"
+                    event.to.col != event.from.col -> "往旁移動"
+                    else -> "調整了陣位"
+                }
+                "${name(event.squadId)} $direction"
+            }
             is BattleEndEvent -> when (event.outcome) {
                 BattleOutcome.PLAYER_VICTORY -> "我方勝利！"
                 BattleOutcome.ENEMY_VICTORY -> "我方敗北……"

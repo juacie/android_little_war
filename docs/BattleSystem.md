@@ -16,9 +16,8 @@ laneDistance  = |attackerCol - defenderCol|
 distance      = max(depthDistance, laneDistance)
 ```
 
-A unit can only target enemies where `distance <= attackRange`. There is no movement in Milestone
-001 — a unit that can't reach anyone in range simply idles that turn. This is intentional: range
-and formation composition are meant to be the puzzle, not something you can walk around.
+A unit can only target enemies where `distance <= attackRange`. If nothing is in range, the squad
+moves instead — see "Movement" below.
 
 ## Turn order (ATB / energy gauge)
 
@@ -123,6 +122,34 @@ been a decisive win. (This is exactly how an earlier distance-penalty version of
 `BattleEngineTest.simulate_massiveNumericalAdvantage_winsDecisively`.) An evasion bonus can never
 remove a target from range, only make it harder to hit, so this failure mode isn't possible.
 
+## Movement (Phase 2 of the 方陣制 redesign)
+
+When a squad's turn comes up (energy ≥ 100, same gate as an attack) and `Targeting.findPrimaryTarget`
+finds nobody in range, the squad moves one cell instead of idling — consuming the same 100 energy an
+attack would. This is the macro-grid slice of the movement idea in `docs/SquadBattleConcept.md`; the
+full 5×5 sub-grid movement described there needs a squad-growth/leveling system that doesn't exist
+yet (`squadCapacity` is still a fixed number, not a level curve), so this phase moves squads on the
+existing 3×5 macro grid, one cell per action, same for every unit type (no per-unit move speed yet).
+
+**Target:** `Targeting.findNearestEnemy` — nearest alive enemy squad by `distance`, ignoring range,
+same tie-break as `findPrimaryTarget` (lowest HP, then id) so the choice is deterministic.
+
+**Step:** `Movement.planStep` shrinks whichever axis is currently the bottleneck in
+`distance = max(depthDistance, laneDistance)` — move row toward 0 (the frontline) by one if
+`depthDistance >= laneDistance` and the squad isn't already at row 0, otherwise step one column toward
+the target's column. Ties prefer reducing depth first. Returns `null` (no move) once the squad can't
+get any closer this way — e.g. already at row 0 with its column aligned to the target's, but the
+target's own row still keeps `depthDistance` above the squad's `attackRange` (structurally can't be
+closed by this squad's movement alone).
+
+**Collision:** a squad won't move onto a cell already occupied by another *living* squad on its own
+side — no displacement/pathfinding, it just doesn't move that tick and re-evaluates next time it
+acts. This can produce a deterministic "traffic jam" behind a squad that's blocking the way; that's
+accepted behavior for this phase, not a bug.
+
+No RNG is involved in movement — `planStep` is a pure function of both squads' positions — so this
+doesn't touch determinism.
+
 ## Leader aura
 
 If a squad's own unit type has `isLeader = true`, **only that squad's own**
@@ -133,17 +160,19 @@ that buff *other* squads are a possible future refinement, not this phase's scop
 
 ## Known simplifications (intentional, documented so they aren't mistaken for bugs)
 
-- No movement — see "Grid & distance" above. Squads don't reposition mid-battle; the retreat evasion
-  bonus above is the only way a squad's internal state affects combat without movement.
+- Movement is macro-grid only (one 3×5 cell per action, same speed for every unit type) — see
+  "Movement" above. The 5×5 sub-grid movement from `docs/SquadBattleConcept.md`, with per-unit-type
+  move speed, needs a squad-growth/leveling system that doesn't exist yet.
 - Leader death does not end the battle early; the leader's squad is just another squad.
 - Only `SINGLE` and `PLUS` AoE shapes exist so far (line/full-board AoE are future work). AoE is
   still resolved squad-vs-squad on the 3×5 macro grid — it does not reach into a squad's internal
   5×5 sub-grid.
-- Backline-vs-backline (`row=2` on both sides) is always distance 5 — the maximum possible on a
-  3-row board. If a unit meant to still be dangerous from the backline (e.g. archer/mage) has
-  `attackRange < 5`, two such units surviving on opposite backlines can never reach each other and
-  the battle stalls out to the 300-tick draw cap. `archer`/`mage` are set to `attackRange = 5` for
-  exactly this reason — don't lower it below 5 without re-running a mirror-match simulation to
-  check the draw rate.
+- Backline-vs-backline (`row=2` on both sides) starts at distance 5 — the maximum possible on a
+  3-row board — but movement now lets either squad walk to row 0, shrinking `depthDistance` down to
+  a minimum of 3 (`0+2+1`). A unit meant to still be dangerous from the backline (e.g. archer/mage)
+  with `attackRange < 3` still risks a 300-tick draw if both squads happen to keep colliding with
+  allies on the way forward (see "Collision" under Movement above) instead of ever actually closing
+  the gap. `archer`/`mage` are kept at `attackRange = 5` — don't lower it without re-running a
+  mirror-match simulation to check the draw rate.
 - Hero units and the off-board 全軍領袖 (army-wide leader, no HP, not on the board) are not
   implemented — see `docs/SquadBattleConcept.md` and `docs/ROADMAP.md`.

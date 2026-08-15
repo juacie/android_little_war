@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.juacie.littlewar.battleengine.BattleSide
+import com.juacie.littlewar.battleengine.Position
 import com.juacie.littlewar.battleengine.SquadSnapshot
 
 @Composable
@@ -62,12 +63,12 @@ fun BattleScreen(
         Spacer(Modifier.height(4.dp))
 
         Text("敵方", style = MaterialTheme.typography.titleSmall)
-        SideGrid(side = BattleSide.ENEMY, rowOrder = listOf(2, 1, 0), roster = state.roster, hp = state.hp, flashId = state.flashTargetId)
+        SideGrid(side = BattleSide.ENEMY, rowOrder = listOf(2, 1, 0), roster = state.roster, hp = state.hp, positions = state.positions, flashId = state.flashTargetId)
 
         Spacer(Modifier.height(12.dp))
 
         Text("我方", style = MaterialTheme.typography.titleSmall)
-        SideGrid(side = BattleSide.PLAYER, rowOrder = listOf(0, 1, 2), roster = state.roster, hp = state.hp, flashId = state.flashTargetId)
+        SideGrid(side = BattleSide.PLAYER, rowOrder = listOf(0, 1, 2), roster = state.roster, hp = state.hp, positions = state.positions, flashId = state.flashTargetId)
 
         Spacer(Modifier.weight(1f))
         if (!state.isFinished) {
@@ -87,10 +88,16 @@ private fun SideGrid(
     rowOrder: List<Int>,
     roster: List<SquadSnapshot>,
     hp: Map<String, Int>,
+    positions: Map<String, Position>,
     flashId: String?
 ) {
-    val unitsByCell = remember(roster, side) {
-        roster.filter { it.side == side }.associateBy { it.position.row to it.position.col }
+    // 方陣制 Phase 2（移動機制）：格子位置改用 state.positions（隨 MoveEvent 即時更新），
+    // 不是 roster 裡固定的戰鬥開始位置。
+    val unitsByCell = remember(roster, positions, side) {
+        roster.filter { it.side == side }.associateBy { unit ->
+            val pos = positions[unit.id] ?: unit.position
+            pos.row to pos.col
+        }
     }
 
     Column {

@@ -47,7 +47,12 @@ object BattleEngine {
                 actor.energy -= ENERGY_THRESHOLD
 
                 val enemyPool = if (actor.side == BattleSide.PLAYER) enemyUnits else playerUnits
-                val primaryTarget = Targeting.findPrimaryTarget(actor, enemyPool) ?: continue
+                val primaryTarget = Targeting.findPrimaryTarget(actor, enemyPool)
+                if (primaryTarget == null) {
+                    val allyPool = if (actor.side == BattleSide.PLAYER) playerUnits else enemyUnits
+                    tryMove(actor, enemyPool, allyPool, tick, events)
+                    continue
+                }
 
                 events += AttackEvent(tick, actor.id, primaryTarget.id)
                 val targets = Targeting.collectAoeTargets(primaryTarget, actor.definition.aoeShape, enemyPool)
@@ -74,6 +79,25 @@ object BattleEngine {
             survivingPlayerUnitIds = playerUnits.filter { it.isAlive }.map { it.id },
             survivingEnemyUnitIds = enemyUnits.filter { it.isAlive }.map { it.id }
         )
+    }
+
+    // 方陣制 Phase 2：範圍內沒有敵人時，把這次行動（同樣消耗 100 能量）改成往最近的敵方方陣移動
+    // 一格，而不是原地 idle。同側方陣互不能疊在同一格——擋路就這次不移動，deterministic，
+    // 不做繞路演算法。
+    private fun tryMove(
+        actor: Squad,
+        enemyPool: List<Squad>,
+        allyPool: List<Squad>,
+        tick: Int,
+        events: MutableList<BattleEvent>
+    ) {
+        val moveTarget = Targeting.findNearestEnemy(actor, enemyPool) ?: return
+        val newPosition = Movement.planStep(actor.position, moveTarget.position) ?: return
+        val blocked = allyPool.any { it !== actor && it.isAlive && it.position == newPosition }
+        if (blocked) return
+
+        events += MoveEvent(tick, actor.id, actor.position, newPosition)
+        actor.position = newPosition
     }
 
     private fun resolveHit(
