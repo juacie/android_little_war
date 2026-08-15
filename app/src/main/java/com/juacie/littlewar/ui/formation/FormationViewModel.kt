@@ -1,9 +1,11 @@
 package com.juacie.littlewar.ui.formation
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.juacie.littlewar.battleengine.StageData
 import com.juacie.littlewar.domain.usecase.GetGameDataUseCase
+import com.juacie.littlewar.domain.usecase.GetStagesUseCase
 import com.juacie.littlewar.domain.usecase.ObserveFormationUseCase
+import com.juacie.littlewar.domain.usecase.ObserveSelectedStageUseCase
 import com.juacie.littlewar.domain.usecase.SelectPaletteUnitUseCase
 import com.juacie.littlewar.domain.usecase.StartBattleUseCase
 import com.juacie.littlewar.domain.usecase.ToggleUnitAtCellUseCase
@@ -11,44 +13,54 @@ import com.juacie.littlewar.domain.usecase.ValidateFormationUseCase
 import com.juacie.littlewar.ui.formation.FormationContract.Effect
 import com.juacie.littlewar.ui.formation.FormationContract.Event
 import com.juacie.littlewar.ui.formation.FormationContract.State
+import com.juacie.littlewar.ui.mvi.MviViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+private const val GRID_ROWS = 3
+private const val GRID_COLS = 5
 
 @HiltViewModel
 class FormationViewModel @Inject constructor(
     getGameData: GetGameDataUseCase,
+    getStages: GetStagesUseCase,
+    private val observeSelectedStage: ObserveSelectedStageUseCase,
     private val observeFormation: ObserveFormationUseCase,
     private val selectPaletteUnit: SelectPaletteUnitUseCase,
     private val toggleUnitAtCell: ToggleUnitAtCellUseCase,
     private val validateFormation: ValidateFormationUseCase,
     private val startBattle: StartBattleUseCase
-) : ViewModel() {
+) : MviViewModel<State, Event, Effect>(State(units = getGameData().units)) {
 
-    private val _state = MutableStateFlow(State(units = getGameData().units))
-    val state: StateFlow<State> = _state.asStateFlow()
-
-    private val effectChannel = Channel<Effect>()
-    val effect = effectChannel.receiveAsFlow()
+    private val stages = getStages()
 
     init {
         viewModelScope.launch {
             observeFormation().collect { snapshot ->
-                _state.value = _state.value.copy(
-                    slots = snapshot.slots,
-                    selectedUnitId = snapshot.selectedUnitId,
-                    isValid = validateFormation(snapshot.slots)
-                )
+                setState {
+                    copy(
+                        slots = snapshot.slots,
+                        selectedUnitId = snapshot.selectedUnitId,
+                        isValid = validateFormation(snapshot.slots)
+                    )
+                }
+            }
+        }
+        viewModelScope.launch {
+            observeSelectedStage().collect { stageId ->
+                val stage = stages.firstOrNull { it.id == stageId }
+                setState {
+                    copy(
+                        enemyStageName = stage?.name.orEmpty(),
+                        enemySlots = buildEnemySlots(stage)
+                    )
+                }
             }
         }
     }
 
-    fun setEvent(event: Event) {
+    override fun setEvent(event: Event) {
         when (event) {
             is Event.SelectUnit -> selectPaletteUnit(event.unitId)
             is Event.TapCell -> toggleUnitAtCell(event.row, event.col)
@@ -57,8 +69,16 @@ class FormationViewModel @Inject constructor(
     }
 
     private fun confirmFormation() {
-        if (!_state.value.isValid) return
+        if (!currentState.isValid) return
         startBattle()
-        viewModelScope.launch { effectChannel.send(Effect.NavigateToBattle) }
+        sendEffect(Effect.NavigateToBattle)
+    }
+
+    private fun buildEnemySlots(stage: StageData?): List<String?> {
+        val slots = MutableList<String?>(GRID_ROWS * GRID_COLS) { null }
+        stage?.enemyFormation?.slots?.forEach { slot ->
+            slots[slot.row * GRID_COLS + slot.col] = slot.unitId
+        }
+        return slots
     }
 }

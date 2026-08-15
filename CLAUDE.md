@@ -44,9 +44,9 @@ data/repository/    — repository 介面的實作，@Singleton，透過 di/AppM
 
 ## 建置環境（重要，容易忘記）
 
-- Kotlin **2.3.21**、AGP **9.2.1**、compileSdk **37**（Compose 1.12 起強制要求）、JVM target **21**。
+- Kotlin **2.3.21**、AGP **9.2.1**、compileSdk **37**（Compose 1.12 起強制要求）、JVM target **25**。
 - **AGP 9 起不用再套用 `org.jetbrains.kotlin.android` plugin**，Kotlin 編譯內建在 AGP 裡。`:battle-engine` 這種純 Kotlin/JVM 模組才需要套 `org.jetbrains.kotlin.jvm`。
-- `gradle.properties` 裡手動釘死用 **Android Studio 內建的 JBR (JDK 21)** 當 Gradle 的 Java toolchain（`org.gradle.java.home` + `org.gradle.java.installations.paths`），並關掉 toolchain 自動偵測。原因：這台機器上 Gradle 的 toolchain 自動偵測會掃到 VS Code Java 擴充套件內建、缺少 `jlink` 的殘缺 JRE，導致 compileSdk 37 的 jlink transform 失敗。**如果之後在別台機器上建置失敗、錯誤訊息提到 `jlink executable ... does not exist`，去改這兩行路徑，不要浪費時間懷疑是程式碼問題。**
+- `gradle.properties` 裡手動釘死用 **Android Studio 內建的 JBR (JDK 25)** 當 Gradle 的 Java toolchain（`org.gradle.java.home` + `org.gradle.java.installations.paths`），並關掉 toolchain 自動偵測。原因：這台機器上 Gradle 的 toolchain 自動偵測會掃到 VS Code Java 擴充套件內建、缺少 `jlink` 的殘缺 JRE，導致 compileSdk 37 的 jlink transform 失敗。**如果之後在別台機器上建置失敗、錯誤訊息提到 `jlink executable ... does not exist`，去改這兩行路徑，不要浪費時間懷疑是程式碼問題。**
 - Hilt 用 2.60.1、KSP 用 2.3.11 — 這兩個在 build 當下有驗證過可以正常 resolve，如果之後 bump Kotlin 版本要記得重新確認相容性（Hilt 的 Gradle plugin 跟 AGP 9 的相容性歷史上出過好幾次問題）。
 
 ## 開發慣例

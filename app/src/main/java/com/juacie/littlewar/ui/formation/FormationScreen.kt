@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
@@ -44,6 +46,7 @@ fun FormationScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
         Text("排兵佈陣", style = MaterialTheme.typography.headlineSmall)
@@ -53,6 +56,39 @@ fun FormationScreen(
         )
         Spacer(Modifier.height(16.dp))
 
+        if (state.enemyStageName.isNotEmpty()) {
+            Text("敵方陣容：${state.enemyStageName}", style = MaterialTheme.typography.titleSmall)
+            Spacer(Modifier.height(8.dp))
+            // 跟 BattleScreen 的敵方陣型畫法一致：後排先畫、frontline（row 0）貼齊下方己方陣容的 frontline，
+            // 兩軍才會像戰鬥畫面一樣在畫面中間對打，而不是敵方後排貼著我方前排。
+            for (row in listOf(2, 1, 0)) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    for (col in 0 until 5) {
+                        val index = row * 5 + col
+                        val unitId = state.enemySlots[index]
+                        val unitName = unitId?.let { id -> state.units.firstOrNull { it.id == id }?.name } ?: ""
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .aspectRatio(1f)
+                                .border(1.dp, MaterialTheme.colorScheme.outline)
+                                .background(
+                                    if (unitId != null) MaterialTheme.colorScheme.errorContainer
+                                    else MaterialTheme.colorScheme.surface
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(unitName, style = MaterialTheme.typography.labelSmall)
+                        }
+                    }
+                }
+                Spacer(Modifier.height(4.dp))
+            }
+            Spacer(Modifier.height(16.dp))
+        }
+
+        Text("己方陣容", style = MaterialTheme.typography.titleSmall)
+        Spacer(Modifier.height(8.dp))
         for (row in 0 until 3) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 for (col in 0 until 5) {

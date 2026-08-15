@@ -7,7 +7,9 @@ object FormationContract {
         val units: List<UnitDefinition> = emptyList(),
         val slots: List<String?> = List(15) { null },
         val selectedUnitId: String? = null,
-        val isValid: Boolean = false
+        val isValid: Boolean = false,
+        val enemyStageName: String = "",
+        val enemySlots: List<String?> = List(15) { null }
     )
 
     sealed interface Event {

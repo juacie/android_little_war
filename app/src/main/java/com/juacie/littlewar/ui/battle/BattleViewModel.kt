@@ -1,6 +1,5 @@
 package com.juacie.littlewar.ui.battle
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juacie.littlewar.battleengine.AttackEvent
 import com.juacie.littlewar.battleengine.BattleEndEvent
@@ -16,13 +15,9 @@ import com.juacie.littlewar.domain.usecase.ObserveBattleResultUseCase
 import com.juacie.littlewar.ui.battle.BattleContract.Effect
 import com.juacie.littlewar.ui.battle.BattleContract.Event
 import com.juacie.littlewar.ui.battle.BattleContract.State
+import com.juacie.littlewar.ui.mvi.MviViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -32,13 +27,7 @@ private const val FINISH_HOLD_MS = 600L
 @HiltViewModel
 class BattleViewModel @Inject constructor(
     observeBattleResult: ObserveBattleResultUseCase
-) : ViewModel() {
-
-    private val _state = MutableStateFlow(State())
-    val state: StateFlow<State> = _state.asStateFlow()
-
-    private val effectChannel = Channel<Effect>()
-    val effect = effectChannel.receiveAsFlow()
+) : MviViewModel<State, Event, Effect>(State()) {
 
     @Volatile
     private var skipRequested = false
@@ -47,28 +36,30 @@ class BattleViewModel @Inject constructor(
         val result = observeBattleResult().value
         if (result == null) {
             // Shouldn't happen — FormationScreen always calls startBattle() before navigating here.
-            viewModelScope.launch { effectChannel.send(Effect.NavigateToResult) }
+            sendEffect(Effect.NavigateToResult)
         } else {
             val rosterById = result.roster.associateBy { it.id }
-            _state.value = State(roster = result.roster, hp = result.roster.associate { it.id to it.maxHp })
+            setState { copy(roster = result.roster, hp = result.roster.associate { it.id to it.maxHp }) }
 
             viewModelScope.launch {
                 for (event in result.events) {
                     applyDamage(event)
-                    _state.value = _state.value.copy(
-                        flashTargetId = flashedUnitId(event),
-                        logText = describeEvent(event, rosterById)
-                    )
+                    setState {
+                        copy(
+                            flashTargetId = flashedUnitId(event),
+                            logText = describeEvent(event, rosterById)
+                        )
+                    }
                     delay(if (skipRequested) 0L else STEP_DELAY_MS)
                 }
-                _state.value = _state.value.copy(isFinished = true)
+                setState { copy(isFinished = true) }
                 delay(FINISH_HOLD_MS)
-                effectChannel.send(Effect.NavigateToResult)
+                sendEffect(Effect.NavigateToResult)
             }
         }
     }
 
-    fun setEvent(event: Event) {
+    override fun setEvent(event: Event) {
         when (event) {
             Event.SkipAnimation -> skipRequested = true
         }
@@ -76,7 +67,7 @@ class BattleViewModel @Inject constructor(
 
     private fun applyDamage(event: BattleEvent) {
         if (event is DamageEvent) {
-            _state.value = _state.value.copy(hp = _state.value.hp + (event.targetId to event.remainingHp))
+            setState { copy(hp = hp + (event.targetId to event.remainingHp)) }
         }
     }
 

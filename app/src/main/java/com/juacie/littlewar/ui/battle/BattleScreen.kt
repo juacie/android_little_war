@@ -51,17 +51,19 @@ fun BattleScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text("敵方", style = MaterialTheme.typography.titleSmall)
-        SideGrid(side = BattleSide.ENEMY, rowOrder = listOf(2, 1, 0), roster = state.roster, hp = state.hp, flashId = state.flashTargetId)
-
-        Spacer(Modifier.height(12.dp))
+        // 戰鬥說明文字放最上方，讓中間戰鬥區域保留給之後的兵種移動動畫使用。
         Text(
             state.logText,
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp)
+                .padding(bottom = 8.dp)
         )
+        Spacer(Modifier.height(4.dp))
+
+        Text("敵方", style = MaterialTheme.typography.titleSmall)
+        SideGrid(side = BattleSide.ENEMY, rowOrder = listOf(2, 1, 0), roster = state.roster, hp = state.hp, flashId = state.flashTargetId)
+
         Spacer(Modifier.height(12.dp))
 
         Text("我方", style = MaterialTheme.typography.titleSmall)
