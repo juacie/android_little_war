@@ -176,24 +176,24 @@
   ],
   "playerFormation": {
     "slots": [
-      { "unitId": "shield", "row": 0, "col": 1 },
+      { "unitId": "shield", "row": 0, "col": 0 },
+      { "unitId": "spearman", "row": 0, "col": 1 },
       { "unitId": "spearman", "row": 0, "col": 2 },
-      { "unitId": "shield", "row": 0, "col": 3 },
-      { "unitId": "spearman", "row": 1, "col": 1 },
+      { "unitId": "spearman", "row": 0, "col": 3 },
+      { "unitId": "shield", "row": 0, "col": 4 },
       { "unitId": "leader", "row": 1, "col": 2 },
-      { "unitId": "spearman", "row": 1, "col": 3 },
       { "unitId": "archer", "row": 2, "col": 1 },
       { "unitId": "mage", "row": 2, "col": 3 }
     ]
   },
   "enemyFormation": {
     "slots": [
-      { "unitId": "shield", "row": 0, "col": 1 },
+      { "unitId": "shield", "row": 0, "col": 0 },
+      { "unitId": "spearman", "row": 0, "col": 1 },
       { "unitId": "spearman", "row": 0, "col": 2 },
-      { "unitId": "shield", "row": 0, "col": 3 },
-      { "unitId": "spearman", "row": 1, "col": 1 },
+      { "unitId": "spearman", "row": 0, "col": 3 },
+      { "unitId": "shield", "row": 0, "col": 4 },
       { "unitId": "leader", "row": 1, "col": 2 },
-      { "unitId": "spearman", "row": 1, "col": 3 },
       { "unitId": "archer", "row": 2, "col": 1 },
       { "unitId": "mage", "row": 2, "col": 3 }
     ]
