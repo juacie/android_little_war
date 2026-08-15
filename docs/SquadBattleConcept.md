@@ -46,8 +46,8 @@
 
 ## 附帶的兩個小範圍項目（跟方陣制本身無關，可以獨立做）
 
-- 進關卡前預覽敵方陣容（UI + 讀 `StageData.enemyFormation`，不動引擎）
-- 排兵佈陣階段限制各兵種數量上限（Formation 邏輯層 + 可能的 data-driven 上限設定）
+- 進關卡前預覽敵方陣容（UI + 讀 `StageData.enemyFormation`，不動引擎）——已完成，commit 09c5718
+- 排兵佈陣階段限制各兵種數量上限（Formation 邏輯層 + 可能的 data-driven 上限設定）——**已完成**：`UnitDefinition.formationCap`（data-driven，`null` = 不限制，見 `milestone-001.json`）在 `FormationRepositoryImpl.toggleUnitAt` 放置當下擋掉超過上限的 tap，陣容不變；`FormationScreen` 兵種選單同步顯示「已放置數／上限」。這是排兵佈陣階段的格數限制，跟方陣制構想裡的 `squadCapacity`（單一方陣內部人數）是不同層級的數字，兩者不衝突。
 
 ## 還沒定案的問題
 

@@ -18,7 +18,8 @@
       "damageType": "PHYSICAL",
       "element": "NONE",
       "aoeShape": "SINGLE",
-      "squadCapacity": 6
+      "squadCapacity": 6,
+      "formationCap": 4
     },
     {
       "id": "mage",
@@ -38,7 +39,8 @@
       "damageType": "MAGICAL",
       "element": "FIRE",
       "aoeShape": "PLUS",
-      "squadCapacity": 4
+      "squadCapacity": 4,
+      "formationCap": 3
     },
     {
       "id": "shield",
@@ -58,7 +60,8 @@
       "damageType": "PHYSICAL",
       "element": "NONE",
       "aoeShape": "SINGLE",
-      "squadCapacity": 9
+      "squadCapacity": 9,
+      "formationCap": 4
     },
     {
       "id": "spearman",
@@ -78,7 +81,8 @@
       "damageType": "PHYSICAL",
       "element": "WATER",
       "aoeShape": "SINGLE",
-      "squadCapacity": 9
+      "squadCapacity": 9,
+      "formationCap": 5
     },
     {
       "id": "militia",
@@ -98,7 +102,8 @@
       "damageType": "PHYSICAL",
       "element": "NONE",
       "aoeShape": "SINGLE",
-      "squadCapacity": 9
+      "squadCapacity": 9,
+      "formationCap": 5
     },
     {
       "id": "cavalry",
@@ -118,7 +123,8 @@
       "damageType": "PHYSICAL",
       "element": "WOOD",
       "aoeShape": "SINGLE",
-      "squadCapacity": 4
+      "squadCapacity": 4,
+      "formationCap": 3
     },
     {
       "id": "crossbow",
@@ -138,7 +144,8 @@
       "damageType": "PHYSICAL",
       "element": "LIGHT",
       "aoeShape": "SINGLE",
-      "squadCapacity": 6
+      "squadCapacity": 6,
+      "formationCap": 4
     },
     {
       "id": "assassin",
@@ -158,7 +165,8 @@
       "damageType": "PHYSICAL",
       "element": "DARK",
       "aoeShape": "SINGLE",
-      "squadCapacity": 4
+      "squadCapacity": 4,
+      "formationCap": 3
     },
     {
       "id": "leader",
@@ -180,7 +188,8 @@
       "aoeShape": "SINGLE",
       "isLeader": true,
       "leaderAttackBuffPercent": 15,
-      "squadCapacity": 4
+      "squadCapacity": 4,
+      "formationCap": 1
     }
   ],
   "playerFormation": {

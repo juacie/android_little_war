@@ -31,9 +31,15 @@ class FormationRepositoryImpl @Inject constructor(
     override fun toggleUnitAt(row: Int, col: Int) {
         val index = row * GRID_COLS + col
         val selected = _selectedUnitId.value
-        _playerSlots.value = _playerSlots.value.toMutableList().apply {
-            this[index] = if (this[index] == selected) null else selected
+        val current = _playerSlots.value
+        val next = if (current[index] == selected) null else selected
+        // 放置新兵種前先檢查兵種數量上限（data-driven，見 UnitDefinition.formationCap）；
+        // 上限到了就整個 tap 無效，維持原陣容不變，不用彈提示（沿用既有的「不合法就不變動」模式）。
+        if (next != null) {
+            val cap = gameData.unitById(next).formationCap
+            if (cap != null && current.count { it == next } >= cap) return
         }
+        _playerSlots.value = current.toMutableList().apply { this[index] = next }
     }
 
     override fun moveUnitAt(fromRow: Int, fromCol: Int, toRow: Int, toCol: Int) {
