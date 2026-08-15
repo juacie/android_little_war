@@ -29,5 +29,8 @@ data class UnitDefinition(
     val leaderAttackBuffPercent: Double = 0.0,
     // 方陣人數上限，Phase 1 先用固定值（不做等級成長曲線）。初始猜測值，
     // 待逐兵種 playtest 後再調整，詳見 docs/SquadBattleConcept.md。
-    val squadCapacity: Int = 1
+    val squadCapacity: Int = 1,
+    // 排兵佈陣階段「同一兵種最多可放幾格」的上限，null = 不限制。跟 squadCapacity（單一方陣內部人數）
+    // 是不同層級的數字，這個管的是 3x5 戰場上同兵種佔用的格數，避免單一兵種灌爆整個陣容。
+    val formationCap: Int? = null
 )

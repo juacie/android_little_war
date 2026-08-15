@@ -229,10 +229,13 @@ fun FormationScreen(
         Spacer(Modifier.height(8.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             state.units.forEach { unit ->
+                val placedCount = state.slots.count { it == unit.id }
+                val cap = unit.formationCap
+                val label = if (cap != null) "${unit.name} $placedCount/$cap" else unit.name
                 FilterChip(
                     selected = state.selectedUnitId == unit.id,
                     onClick = { viewModel.setEvent(FormationContract.Event.SelectUnit(unit.id)) },
-                    label = { Text(unit.name) }
+                    label = { Text(label) }
                 )
             }
         }

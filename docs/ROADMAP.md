@@ -18,6 +18,8 @@ Step 2（實機／模擬器實際遊玩，收集「好不好玩」的主觀回�
 
 **Phase 2（移動機制）也已完成**，但範圍縮小成「3×5 macro grid 上一次一格」，不是構想文件原本設想的 5×5 細格移動（那需要方陣人數成長曲線，這個系統還沒拍板）：沒有敵人在射程內時，方陣改成往最近的敵方方陣移動一格，一樣消耗攻速能量閘門，純規則決定移動方向、不吃 RNG，determinism 不受影響。詳見 [BattleSystem.md](BattleSystem.md)「Movement」一節。英雄兵種、全軍領袖離場改版、5×5 細格移動是還沒開工的後續階段，範圍要開工前再回 [SquadBattleConcept.md](SquadBattleConcept.md) 確認。
 
+`SquadBattleConcept.md`「附帶的兩個小範圍項目」也已全部完成：敵方陣容預覽（同上）之外，排兵佈陣階段的**兵種數量上限**（`UnitDefinition.formationCap`，data-driven，超過上限的放置在 `FormationRepositoryImpl` 直接被擋下，UI 同步顯示已放置數／上限）也已實作，跟方陣制構想本身無關、可獨立完成。
+
 ## 完整 Milestone 清單
 
 ```text
