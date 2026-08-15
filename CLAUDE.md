@@ -64,8 +64,38 @@ data/repository/    — repository 介面的實作，@Singleton，透過 di/AppM
 
 ## Git 工作流程
 
-使用者是這個專案唯一的開發者，已明確要求：**完成一個階段性的小功能、且確認可以建置／測試通過之後，直接 commit（並 push 到 `origin/main`）,不用每次都先問。** 如果建置失敗或測試沒過，不要 commit，先修好。**commit message 一律用中文撰寫**，重點是講清楚「為什麼」這次改動存在，不是條列做了什麼。
+使用者是這個專案唯一的開發者，已明確要求：**完成一個階段性的小功能、且確認可以建置／測試通過之後，直接 commit（並 push），不用每次都先問。** 如果建置失敗或測試沒過，不要 commit，先修好。分支與 commit 規範以 `~/Downloads/Git_notice.md`（使用者提供）為準，摘要如下：
+
+### 分支策略
+
+三個主要分支，日常工作**永遠不要直接 commit 在 `release` 或 `main` 上**：
+
+```text
+main     — 正式上架版本，只從 release 合併進來
+release  — 測試版，只從 develop 合併進來，QA 驗證用
+develop  — 日常開發主分支，新功能／修正都先進這裡
+```
+
+流程：功能／修正在 `fe/xxx` 或 `cr/xxx` 分支上做 → 合併回 `develop` → `develop` 合併到 `release` 給測試 → 測試沒問題後 `release` 合併到 `main` 上架。目前單人開發，可以直接 commit 在 `develop` 上；如果是明顯獨立的一個功能／修正，優先開對應的 `fe/`／`cr/` 分支再合併回 `develop`。
+
+分支命名：
+- 新功能：`fe/功能名稱`（例：`fe/gacha-system`）
+- Bug／Hotfix：`cr/修正名稱`（例：`cr/battle-draw-loop`）
+
+正式上架完成後記得清掉已經合併、不再使用的 remote 分支，保持 repository 整潔。
+
+### Commit message 規範
+
+格式固定為「**動作：修改內容**」，用中文，常用動作詞：新增／修改／修正／刪除／優化／重構／調整。例如：
+
+```text
+新增：法師 AoE 十字範圍攻擊
+修正：戰鬥引擎能量條門檻計算錯誤
+優化：排兵佈陣畫面點擊反應
+```
+
+（這取代掉先前「commit message 用完整句子講為什麼」的寫法 — 現在統一follow 這個簡短格式。原因如果重要，可以在 body 另起一段補充，但標題行一定要是「動作：內容」。）
 
 ### push 權限注意事項
 
-`origin` 指向 `git@github.com:juacie/android_little_war.git`，但這台機器上設定的 SSH 帳號目前是 `mygo-jack`，沒有這個 repo 的寫入權限，push 會被拒絕。commit 本身不受影響（照樣 commit），但 push 會失敗直到帳號權限問題解決（加 collaborator／換 remote／換 SSH key 三選一，要問使用者要選哪個，不要自己猜）。
+`origin` 指向 `git@github.com:juacie/android_little_war.git`，這台機器上有兩把 SSH key：`~/.ssh/id_rsa`（對應 GitHub 帳號 `juacie`，這個 repo 的擁有者）跟 `~/.ssh/id_rsa_personal`（對應 `mygo-jack`，預設在 `~/.ssh/config` 裡，沒有這個 repo 權限）。這個 repo 的 local git config 已經設定 `core.sshCommand` 強制用 `id_rsa`（`juacie` 身分），所以在這個 repo 底下 push 不需要額外處理。如果又出現 permission denied，先檢查 `git config --local --get core.sshCommand` 有沒有不見。
