@@ -1,6 +1,6 @@
 # CLAUDE.md — 專案注意事項
 
-給未來的自己（或未來的 Claude）快速抓回專案脈絡用。詳細設計理念看 [Game_Project_GDD.md](Game_Project_GDD.md)，戰鬥公式看 [docs/BattleSystem.md](docs/BattleSystem.md)。
+給未來的自己（或未來的 Claude）快速抓回專案脈絡用。詳細設計理念看 [Game_Project_GDD.md](Game_Project_GDD.md)，戰鬥公式看 [docs/BattleSystem.md](docs/BattleSystem.md)，完整 Milestone 編號與長期路線圖看 [docs/ROADMAP.md](docs/ROADMAP.md)。
 
 ## 現況
 

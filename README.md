@@ -2,7 +2,7 @@
 
 Android RPG 策略遊戲。核心玩法：兵種收集 × 領袖抽卡 × 陣型策略 × 屬性克制 × 自動戰鬥 × RPG 成長。
 
-目前進度：**Milestone 001 — Playable Battle Prototype**（純本機、無後端）。完整企劃見 [Game_Project_GDD.md](Game_Project_GDD.md)；開發規範與環境注意事項見 [CLAUDE.md](CLAUDE.md)；戰鬥公式見 [docs/BattleSystem.md](docs/BattleSystem.md)。
+目前進度：**Milestone 001 — Playable Battle Prototype**（純本機、無後端）。完整企劃見 [Game_Project_GDD.md](Game_Project_GDD.md)；開發規範與環境注意事項見 [CLAUDE.md](CLAUDE.md)；戰鬥公式見 [docs/BattleSystem.md](docs/BattleSystem.md)；完整 Milestone 路線圖見 [docs/ROADMAP.md](docs/ROADMAP.md)。
 
 ## 結構
 
