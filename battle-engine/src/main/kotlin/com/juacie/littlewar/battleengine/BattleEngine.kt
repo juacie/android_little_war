@@ -82,8 +82,10 @@ object BattleEngine {
     }
 
     // 方陣制 Phase 2：範圍內沒有敵人時，把這次行動（同樣消耗 100 能量）改成往最近的敵方方陣移動
-    // 一格，而不是原地 idle。同側方陣互不能疊在同一格——擋路就這次不移動，deterministic，
-    // 不做繞路演算法。
+    // 一格，而不是原地 idle。同側方陣互不能疊在同一格——主要方向被自己人擋住時，Movement.planStep
+    // 會改試另一軸側移，兩個方向都擋住才真的放棄這次移動，deterministic，不做繞路演算法。
+    // （這解決了「同一路的後排方陣卡死在原地、直到前排死亡才會動」的問題——見 docs/SquadBattleConcept.md
+    // 2026-08-15 playtest 回饋。）
     private fun tryMove(
         actor: Squad,
         enemyPool: List<Squad>,
@@ -92,9 +94,8 @@ object BattleEngine {
         events: MutableList<BattleEvent>
     ) {
         val moveTarget = Targeting.findNearestEnemy(actor, enemyPool) ?: return
-        val newPosition = Movement.planStep(actor.position, moveTarget.position) ?: return
-        val blocked = allyPool.any { it !== actor && it.isAlive && it.position == newPosition }
-        if (blocked) return
+        val isOccupied: (Position) -> Boolean = { pos -> allyPool.any { it !== actor && it.isAlive && it.position == pos } }
+        val newPosition = Movement.planStep(actor.position, moveTarget.position, isOccupied) ?: return
 
         events += MoveEvent(tick, actor.id, actor.position, newPosition)
         actor.position = newPosition
