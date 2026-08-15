@@ -8,9 +8,11 @@ import com.juacie.littlewar.ui.battle.BattleScreen
 import com.juacie.littlewar.ui.formation.FormationScreen
 import com.juacie.littlewar.ui.home.HomeScreen
 import com.juacie.littlewar.ui.result.ResultScreen
+import com.juacie.littlewar.ui.stageselect.StageSelectScreen
 
 object Routes {
     const val HOME = "home"
+    const val STAGE_SELECT = "stage_select"
     const val FORMATION = "formation"
     const val BATTLE = "battle"
     const val RESULT = "result"
@@ -21,7 +23,10 @@ fun LittleWarNavHost() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Routes.HOME) {
         composable(Routes.HOME) {
-            HomeScreen(onStartClick = { navController.navigate(Routes.FORMATION) })
+            HomeScreen(onStartClick = { navController.navigate(Routes.STAGE_SELECT) })
+        }
+        composable(Routes.STAGE_SELECT) {
+            StageSelectScreen(onNavigateToFormation = { navController.navigate(Routes.FORMATION) })
         }
         composable(Routes.FORMATION) {
             FormationScreen(onNavigateToBattle = { navController.navigate(Routes.BATTLE) })

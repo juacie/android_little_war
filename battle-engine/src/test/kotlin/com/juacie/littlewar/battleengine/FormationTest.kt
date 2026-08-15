@@ -27,7 +27,7 @@ class FormationTest {
     @Test
     fun milestone001Preset_bothFormationsLoadIntoValidUnitInstances() {
         val player = Formation.fromFormationData(BattleSide.PLAYER, gameData.playerFormation).toUnitInstances(gameData)
-        val enemy = Formation.fromFormationData(BattleSide.ENEMY, gameData.enemyFormation).toUnitInstances(gameData)
+        val enemy = Formation.fromFormationData(BattleSide.ENEMY, gameData.stageById("stage-02-legion").enemyFormation).toUnitInstances(gameData)
 
         assertTrue(player.size == 8)
         assertTrue(enemy.size == 8)
