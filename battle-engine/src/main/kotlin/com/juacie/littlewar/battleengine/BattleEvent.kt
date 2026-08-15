@@ -45,6 +45,14 @@ data class DeathEvent(
     val unitId: String
 ) : BattleEvent
 
+/** 方陣制 Phase 2：沒有敵人在射程內時，方陣改成往最近的敵方方陣移動一格（見 Movement.planStep）。 */
+data class MoveEvent(
+    override val tick: Int,
+    val squadId: String,
+    val from: Position,
+    val to: Position
+) : BattleEvent
+
 enum class BattleOutcome { PLAYER_VICTORY, ENEMY_VICTORY, DRAW }
 
 data class BattleEndEvent(

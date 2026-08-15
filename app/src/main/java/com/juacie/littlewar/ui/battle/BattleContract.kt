@@ -1,11 +1,13 @@
 package com.juacie.littlewar.ui.battle
 
+import com.juacie.littlewar.battleengine.Position
 import com.juacie.littlewar.battleengine.SquadSnapshot
 
 object BattleContract {
     data class State(
         val roster: List<SquadSnapshot> = emptyList(),
         val hp: Map<String, Int> = emptyMap(),
+        val positions: Map<String, Position> = emptyMap(),
         val logText: String = "",
         val flashTargetId: String? = null,
         val isFinished: Boolean = false

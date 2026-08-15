@@ -32,6 +32,25 @@ object Targeting {
             )
             .firstOrNull()
 
+    /**
+     * Nearest alive enemy squad regardless of range — used as the movement destination when
+     * nothing is in attack range yet (see Movement.planStep). Same tie-break as [findPrimaryTarget]
+     * minus the range filter, so a squad always has a consistent, deterministic "who am I closing
+     * in on" answer.
+     */
+    fun findNearestEnemy(actor: Squad, enemies: List<Squad>): Squad? =
+        enemies
+            .asSequence()
+            .filter { it.isAlive }
+            .sortedWith(
+                compareBy(
+                    { distance(actor, it) },
+                    { it.currentHp },
+                    { it.id }
+                )
+            )
+            .firstOrNull()
+
     fun collectAoeTargets(primary: Squad, shape: AoeShape, allEnemies: List<Squad>): List<Squad> {
         if (shape == AoeShape.SINGLE) return listOf(primary)
 

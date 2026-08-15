@@ -9,7 +9,9 @@ data class Squad(
     val id: String,
     val definition: UnitDefinition,
     val side: BattleSide,
-    val position: Position,
+    // 方陣制 Phase 2（移動機制）：position 從此可變——沒有目標在射程內時，方陣會往最近的
+    // 敵方方陣移動一格（見 Movement.planStep），而不是原地 idle。
+    var position: Position,
     val capacity: Int,
     val maxHp: Int,
     val effectivePhysicalAttack: Int,
