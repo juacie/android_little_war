@@ -50,4 +50,29 @@ class BattleEngineTest {
         val result = BattleEngine.simulate(bigPlayer, loneEnemy, gameData, seed = 99L)
         assertEquals(BattleOutcome.PLAYER_VICTORY, result.outcome)
     }
+
+    @Test
+    fun simulate_tiedEnergyActors_areNotAlwaysResolvedInFavorOfOneSide() {
+        // Two identical lone units always reach the energy threshold on the exact same tick, so
+        // every seed produces a same-tick tie. Unit id ("ENEMY-..." < "PLAYER-..." alphabetically)
+        // must not decide who acts first in that tie, or the enemy side gets a systematic
+        // first-strike advantage in every mirror matchup.
+        val onePlayer = Formation.fromFormationData(
+            BattleSide.PLAYER,
+            FormationData(listOf(FormationSlotData("shield", 0, 0)))
+        )
+        val oneEnemy = Formation.fromFormationData(
+            BattleSide.ENEMY,
+            FormationData(listOf(FormationSlotData("shield", 0, 0)))
+        )
+
+        val firstActorSides = (1..40L).map { seed ->
+            val result = BattleEngine.simulate(onePlayer, oneEnemy, gameData, seed)
+            val firstAttack = result.events.filterIsInstance<AttackEvent>().first()
+            if (firstAttack.attackerId.startsWith("PLAYER")) BattleSide.PLAYER else BattleSide.ENEMY
+        }
+
+        assertTrue(firstActorSides.contains(BattleSide.PLAYER), "enemy should not always win the tied first strike")
+        assertTrue(firstActorSides.contains(BattleSide.ENEMY), "player should not always win the tied first strike")
+    }
 }

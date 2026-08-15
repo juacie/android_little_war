@@ -30,9 +30,17 @@ object BattleEngine {
             tick++
             allUnits.filter { it.isAlive }.forEach { it.energy += it.definition.attackSpeed * TICK_ENERGY_SCALE }
 
+            // Ties (both sides reaching threshold the same tick, common when attackSpeed matches
+            // across the mirror) must NOT be broken by unit id: "ENEMY-..." sorts before
+            // "PLAYER-..." alphabetically, which would silently give the enemy side first strike
+            // on every tied tick. Shuffle ties with the battle's own seeded Random instead, so
+            // the result stays deterministic per-seed without being side-biased.
             val actors = allUnits
                 .filter { it.isAlive && it.energy >= ENERGY_THRESHOLD }
-                .sortedWith(compareByDescending<UnitInstance> { it.energy }.thenBy { it.id })
+                .groupBy { it.energy }
+                .entries
+                .sortedByDescending { it.key }
+                .flatMap { (_, tiedActors) -> if (tiedActors.size > 1) tiedActors.shuffled(random) else tiedActors }
 
             for (actor in actors) {
                 if (!actor.isAlive) continue
