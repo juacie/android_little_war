@@ -36,6 +36,17 @@ class FormationRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun moveUnitAt(fromRow: Int, fromCol: Int, toRow: Int, toCol: Int) {
+        val fromIndex = fromRow * GRID_COLS + fromCol
+        val toIndex = toRow * GRID_COLS + toCol
+        if (fromIndex == toIndex) return
+        _playerSlots.value = _playerSlots.value.toMutableList().apply {
+            val temp = this[toIndex]
+            this[toIndex] = this[fromIndex]
+            this[fromIndex] = temp
+        }
+    }
+
     private fun buildInitialSlots(): List<String?> {
         val slots = MutableList<String?>(GRID_ROWS * GRID_COLS) { null }
         gameData.playerFormation.slots.forEach { slot ->

@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.juacie.littlewar.battleengine.StageData
 import com.juacie.littlewar.domain.usecase.GetGameDataUseCase
 import com.juacie.littlewar.domain.usecase.GetStagesUseCase
+import com.juacie.littlewar.domain.usecase.MoveUnitAtCellUseCase
 import com.juacie.littlewar.domain.usecase.ObserveFormationUseCase
 import com.juacie.littlewar.domain.usecase.ObserveSelectedStageUseCase
 import com.juacie.littlewar.domain.usecase.SelectPaletteUnitUseCase
@@ -29,6 +30,7 @@ class FormationViewModel @Inject constructor(
     private val observeFormation: ObserveFormationUseCase,
     private val selectPaletteUnit: SelectPaletteUnitUseCase,
     private val toggleUnitAtCell: ToggleUnitAtCellUseCase,
+    private val moveUnitAtCell: MoveUnitAtCellUseCase,
     private val validateFormation: ValidateFormationUseCase,
     private val startBattle: StartBattleUseCase
 ) : MviViewModel<State, Event, Effect>(State(units = getGameData().units)) {
@@ -64,6 +66,7 @@ class FormationViewModel @Inject constructor(
         when (event) {
             is Event.SelectUnit -> selectPaletteUnit(event.unitId)
             is Event.TapCell -> toggleUnitAtCell(event.row, event.col)
+            is Event.MoveUnit -> moveUnitAtCell(event.fromRow, event.fromCol, event.toRow, event.toCol)
             Event.ConfirmFormation -> confirmFormation()
         }
     }
