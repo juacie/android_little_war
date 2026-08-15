@@ -305,7 +305,12 @@ Milestone 001 完全不需要雲端。之後端規劃啟動時的建議路線：
 ```text
 Step 1（已完成）— Core Battle Engine + 基礎 UI 演出（Milestone 001）
 Step 2 — 用實機／模擬器實際遊玩，收集「好不好玩」的主觀回饋，調整戰鬥數值與節奏
-Step 3 — 擴充兵種池與敵人關卡（PvE 雛形，仍是本機資料，不上雲）
+Step 3（雛形已完成）— 擴充兵種池與敵人關卡（PvE 雛形，仍是本機資料，不上雲）。
+  兵種池擴充：小兵／騎兵／弩兵／刺客，補齊木／光／暗屬性代表。
+  敵人關卡：GameData 的 `enemyFormation`（單一寫死）改為 `stages`（陣列），
+  新增「選擇關卡」畫面（Home → 選關 → 排陣 → 戰鬥 → 結果），目前 3 關（新手哨站／
+  混合軍團／菁英兵團），難度靠敵方單位數與兵種強度遞增。尚未做的：關卡星等、
+  獎勵、序章／劇情、破關記錄（這些屬於 M014 Stage System 之後的範圍）。
 Step 4 — Backend（Kotlin + Ktor）＋ 帳號系統 ＋ Server 端戰鬥驗證
 Step 5 — 經濟系統／抽卡／寶箱（Server 端執行，Client 不可信原則）
 Step 6 — Soft Launch（Analytics、Crashlytics、Google Play Billing）

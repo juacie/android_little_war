@@ -186,16 +186,51 @@
       { "unitId": "mage", "row": 2, "col": 3 }
     ]
   },
-  "enemyFormation": {
-    "slots": [
-      { "unitId": "shield", "row": 0, "col": 0 },
-      { "unitId": "spearman", "row": 0, "col": 1 },
-      { "unitId": "spearman", "row": 0, "col": 2 },
-      { "unitId": "spearman", "row": 0, "col": 3 },
-      { "unitId": "shield", "row": 0, "col": 4 },
-      { "unitId": "leader", "row": 1, "col": 2 },
-      { "unitId": "archer", "row": 2, "col": 1 },
-      { "unitId": "mage", "row": 2, "col": 3 }
-    ]
-  }
+  "stages": [
+    {
+      "id": "stage-01-outpost",
+      "name": "新手哨站",
+      "enemyFormation": {
+        "slots": [
+          { "unitId": "militia", "row": 0, "col": 1 },
+          { "unitId": "shield", "row": 0, "col": 2 },
+          { "unitId": "militia", "row": 0, "col": 3 },
+          { "unitId": "leader", "row": 1, "col": 2 },
+          { "unitId": "archer", "row": 2, "col": 2 }
+        ]
+      }
+    },
+    {
+      "id": "stage-02-legion",
+      "name": "混合軍團",
+      "enemyFormation": {
+        "slots": [
+          { "unitId": "shield", "row": 0, "col": 0 },
+          { "unitId": "spearman", "row": 0, "col": 1 },
+          { "unitId": "spearman", "row": 0, "col": 2 },
+          { "unitId": "spearman", "row": 0, "col": 3 },
+          { "unitId": "shield", "row": 0, "col": 4 },
+          { "unitId": "leader", "row": 1, "col": 2 },
+          { "unitId": "archer", "row": 2, "col": 1 },
+          { "unitId": "mage", "row": 2, "col": 3 }
+        ]
+      }
+    },
+    {
+      "id": "stage-03-elite",
+      "name": "菁英兵團",
+      "enemyFormation": {
+        "slots": [
+          { "unitId": "shield", "row": 0, "col": 0 },
+          { "unitId": "cavalry", "row": 0, "col": 1 },
+          { "unitId": "assassin", "row": 0, "col": 2 },
+          { "unitId": "cavalry", "row": 0, "col": 3 },
+          { "unitId": "shield", "row": 0, "col": 4 },
+          { "unitId": "leader", "row": 1, "col": 2 },
+          { "unitId": "crossbow", "row": 2, "col": 1 },
+          { "unitId": "crossbow", "row": 2, "col": 3 }
+        ]
+      }
+    }
+  ]
 }

@@ -8,7 +8,7 @@ class BattleEngineTest {
 
     private val gameData = GameDataLoader.loadMilestone001()
     private val player = Formation.fromFormationData(BattleSide.PLAYER, gameData.playerFormation)
-    private val enemy = Formation.fromFormationData(BattleSide.ENEMY, gameData.enemyFormation)
+    private val enemy = Formation.fromFormationData(BattleSide.ENEMY, gameData.stageById("stage-02-legion").enemyFormation)
 
     @Test
     fun simulate_isDeterministic_forTheSameSeed() {
