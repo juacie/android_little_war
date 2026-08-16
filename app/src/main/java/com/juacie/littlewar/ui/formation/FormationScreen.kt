@@ -1,9 +1,11 @@
 package com.juacie.littlewar.ui.formation
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,10 +18,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,10 +42,12 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.juacie.littlewar.battleengine.UnitDefinition
 import kotlin.math.roundToInt
 
 // 拖曳過程中的手指座標/浮動 ghost 是畫面暫態視覺狀態，不放進 MVI State——只有放開手指、
@@ -87,47 +94,62 @@ fun FormationScreen(
 
         if (state.enemyStageName.isNotEmpty()) {
             Text("敵方陣容：${state.enemyStageName}", style = MaterialTheme.typography.titleSmall)
-            Spacer(Modifier.height(8.dp))
-            // 跟 BattleScreen 的敵方陣型畫法一致：後排先畫、frontline（row 0）貼齊下方己方陣容的 frontline，
-            // 兩軍才會像戰鬥畫面一樣在畫面中間對打，而不是敵方後排貼著我方前排。
-            for (row in listOf(2, 1, 0)) {
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    for (col in 0 until 5) {
-                        val index = row * 5 + col
-                        val unitId = state.enemySlots[index]
-                        val unitName = unitId?.let { id -> state.units.firstOrNull { it.id == id }?.name } ?: ""
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .aspectRatio(1f)
-                                .border(1.dp, MaterialTheme.colorScheme.outline)
-                                .background(
-                                    if (unitId != null) MaterialTheme.colorScheme.errorContainer
-                                    else MaterialTheme.colorScheme.surface
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(unitName, style = MaterialTheme.typography.labelSmall)
-                        }
-                    }
-                }
-                Spacer(Modifier.height(4.dp))
-            }
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(4.dp))
         }
-
-        Text("己方陣容", style = MaterialTheme.typography.titleSmall)
         Text(
             "長按已放置的兵種可拖曳到別格：拖到空格＝移動，拖到已放置格＝交換。",
             style = MaterialTheme.typography.bodySmall
         )
         Spacer(Modifier.height(8.dp))
+
+        // 敵我雙方的 3x5 陣區疊在同一個戰場區塊裡（跟 BattleScreen 同一個上敵下我＋中間「戰場」帶
+        // 的視覺邏輯一致），排陣時就能同時看到對方陣容跟自己排了什麼，不用分開兩塊各自捲動比對。
         Box(
             modifier = Modifier.onGloballyPositioned { coords ->
                 gridContainerOffset = coords.boundsInRoot().topLeft
             }
         ) {
             Column {
+                if (state.enemyStageName.isNotEmpty()) {
+                    for (row in listOf(2, 1, 0)) {
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                            for (col in 0 until 5) {
+                                val index = row * 5 + col
+                                val unitId = state.enemySlots[index]
+                                val unitName = unitId?.let { id -> state.units.firstOrNull { it.id == id }?.name } ?: ""
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .aspectRatio(1f)
+                                        .border(1.dp, MaterialTheme.colorScheme.outline)
+                                        .background(
+                                            if (unitId != null) MaterialTheme.colorScheme.errorContainer
+                                            else MaterialTheme.colorScheme.surface
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(unitName, style = MaterialTheme.typography.labelSmall)
+                                }
+                            }
+                        }
+                        Spacer(Modifier.height(4.dp))
+                    }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 2.dp)
+                            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            "戰場",
+                            style = MaterialTheme.typography.labelSmall,
+                            modifier = Modifier.padding(vertical = 4.dp)
+                        )
+                    }
+                    Spacer(Modifier.height(4.dp))
+                }
+
                 for (row in 0 until 3) {
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                         for (col in 0 until 5) {
@@ -227,15 +249,17 @@ fun FormationScreen(
         Spacer(Modifier.height(16.dp))
         Text("兵種", style = MaterialTheme.typography.titleSmall)
         Spacer(Modifier.height(8.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(
+            modifier = Modifier.horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             state.units.forEach { unit ->
                 val placedCount = state.slots.count { it == unit.id }
-                val cap = unit.formationCap
-                val label = if (cap != null) "${unit.name} $placedCount/$cap" else unit.name
-                FilterChip(
-                    selected = state.selectedUnitId == unit.id,
-                    onClick = { viewModel.setEvent(FormationContract.Event.SelectUnit(unit.id)) },
-                    label = { Text(label) }
+                UnitCard(
+                    unit = unit,
+                    placedCount = placedCount,
+                    isSelected = state.selectedUnitId == unit.id,
+                    onClick = { viewModel.setEvent(FormationContract.Event.SelectUnit(unit.id)) }
                 )
             }
         }
@@ -255,6 +279,64 @@ fun FormationScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("開始戰鬥")
+        }
+    }
+}
+
+// 卡片式兵種選單：取代原本的 FilterChip 列表，選取中的兵種用外框標示，已放置至少 1 隻時
+// 右上角疊一個打勾圖示（沒有美術素材，先用內建 icon 表達「已放置」狀態）。
+@Composable
+private fun UnitCard(
+    unit: UnitDefinition,
+    placedCount: Int,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    val cap = unit.formationCap
+    Box(modifier = Modifier.width(88.dp)) {
+        Card(
+            onClick = onClick,
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = if (isSelected) {
+                    MaterialTheme.colorScheme.primaryContainer
+                } else {
+                    MaterialTheme.colorScheme.surfaceVariant
+                }
+            ),
+            border = if (isSelected) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null
+        ) {
+            Column(
+                modifier = Modifier.padding(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    unit.name,
+                    style = MaterialTheme.typography.labelMedium,
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    if (cap != null) "$placedCount/$cap" else "$placedCount",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+        if (placedCount > 0) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(2.dp)
+                    .size(16.dp)
+                    .background(MaterialTheme.colorScheme.primary, CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    "✓",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+            }
         }
     }
 }
