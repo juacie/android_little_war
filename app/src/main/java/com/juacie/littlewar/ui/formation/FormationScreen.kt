@@ -86,21 +86,12 @@ fun FormationScreen(
             .padding(16.dp)
     ) {
         Text("排兵佈陣", style = MaterialTheme.typography.headlineSmall)
-        Text(
-            "先選下方兵種，再點格子放置或移除。前排（下方）距離近，後排（上方）距離遠，射程與陣型會決定戰局。",
-            style = MaterialTheme.typography.bodySmall
-        )
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(8.dp))
 
         if (state.enemyStageName.isNotEmpty()) {
             Text("敵方陣容：${state.enemyStageName}", style = MaterialTheme.typography.titleSmall)
-            Spacer(Modifier.height(4.dp))
+            Spacer(Modifier.height(8.dp))
         }
-        Text(
-            "長按已放置的兵種可拖曳到別格：拖到空格＝移動，拖到已放置格＝交換。",
-            style = MaterialTheme.typography.bodySmall
-        )
-        Spacer(Modifier.height(8.dp))
 
         // 敵我雙方的 3x5 陣區疊在同一個戰場區塊裡（跟 BattleScreen 同一個上敵下我＋中間「戰場」帶
         // 的視覺邏輯一致），排陣時就能同時看到對方陣容跟自己排了什麼，不用分開兩塊各自捲動比對。
@@ -246,9 +237,7 @@ fun FormationScreen(
             }
         }
 
-        Spacer(Modifier.height(16.dp))
-        Text("兵種", style = MaterialTheme.typography.titleSmall)
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(12.dp))
         Row(
             modifier = Modifier.horizontalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
